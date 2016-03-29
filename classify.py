@@ -37,6 +37,13 @@ def tokenizer(tweet, stopset):
     return words
 
 
+def create_fitted_vectorizer(corpus):
+    vectorizer = TfidfVectorizer(input='content', stop_words='english')
+    X = vectorizer.fit_transform(corpus)
+
+    return X
+
+
 def create_vectorizer(corpus):
     vectorizer = TfidfVectorizer(input='content', stop_words='english')
     vectorizer.fit_transform(corpus)
@@ -55,9 +62,9 @@ def top_tfidf_feats(row, features, top_n=25):
     top_ids = np.argsort(row)[::-1][:top_n]
     top_features = [(features[i], row[i]) for i in top_ids]
 
-    df = pd.Dataframe(top_features)
+    df = pd.DataFrame(top_features)
     df.columns = ['feature', 'tfidf']
-    print(df)
+
     return df
 
 
@@ -85,7 +92,7 @@ def main():
 
     corpus = build_corpus_from_csv(dataFile, 'Tweet')
 
-    fitted_vectorizer = create_vectorizer(corpus)
+    fitted_vectorizer = create_fitted_vectorizer(corpus)
     tweet_feats = get_features(corpus)
 
     mean_feats = top_mean_feats(fitted_vectorizer, tweet_feats)
