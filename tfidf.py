@@ -90,10 +90,10 @@ def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
 
 def main():
 
-    corpus = build_corpus_from_csv(dataFile, 'Tweet')
+    tweets = build_corpus_from_csv(dataFile, 'Tweet')
 
-    fitted_vectorizer = create_fitted_vectorizer(corpus)
-    tweet_feats = get_features(corpus)
+    fitted_vectorizer = create_fitted_vectorizer(tweets)
+    tweet_feats = get_features(tweets)
 
     mean_feats = top_mean_feats(fitted_vectorizer, tweet_feats)
 
