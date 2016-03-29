@@ -37,6 +37,14 @@ def tokenizer(tweet, stopset):
     return words
 
 
+def tokenize_corpus(corpus, stopset):
+    tokenized_corpus = []
+    for entry in corpus:
+        tokenized_corpus.append(tokenizer(entry, stopset))
+
+    return tokenized_corpus
+
+
 def create_fitted_vectorizer(corpus):
     vectorizer = TfidfVectorizer(input='content', stop_words='english')
     X = vectorizer.fit_transform(corpus)
@@ -91,6 +99,10 @@ def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
 def main():
 
     tweets = build_corpus_from_csv(dataFile, 'Tweet')
+
+    tokenized_tweets = tokenize_corpus(tweets, stopset)
+
+    print(tokenized_tweets)
 
     fitted_vectorizer = create_fitted_vectorizer(tweets)
     tweet_feats = get_features(tweets)
