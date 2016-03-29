@@ -1,8 +1,9 @@
-import pandas as pd
-
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
+
+import numpy as np
+import pandas as pd
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -50,13 +51,46 @@ def get_features(corpus):
     return features
 
 
+def top_tfidf_feats(row, features, top_n=25):
+    top_ids = np.argsort(row)[::-1][:top_n]
+    top_features = [(features[i], row[i]) for i in top_ids]
+
+    df = pd.Dataframe(top_features)
+    df.columns = ['feature', 'tfidf']
+    print(df)
+    return df
+
+
+def top_feats_in_doc(X, features, row_id, top_n=25):
+    row = np.squeeze(X[40].toarray())
+
+    return top_tfidf_feats(row, features, top_n)
+
+
+def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
+    if grp_ids:
+        D = X[grp_ids].toarray()
+    else:
+        D = X.toarray()
+
+    D[D < min_tfidf] = 0
+    tfidf_means = np.mean(D, axis=0)
+
+    featsDf = top_tfidf_feats(tfidf_means, features, top_n)
+
+    return featsDf
+
+
 def main():
 
     corpus = build_corpus_from_csv(dataFile, 'Tweet')
 
+    fitted_vectorizer = create_vectorizer(corpus)
     tweet_feats = get_features(corpus)
 
-    print(tweet_feats)
+    mean_feats = top_mean_feats(fitted_vectorizer, tweet_feats)
+
+    print(mean_feats)
 
 if __name__ == '__main__':
     main()
