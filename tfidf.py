@@ -13,14 +13,10 @@ stopset = set(stopwords.words('english'))
 dataFile = 'AshleyBillasanoTweets.csv'
 
 
-def build_corpus_from_csv(filename, column):
-    corpus = []
+def build_corpus_from_csv(filename):
     data = pd.read_csv(filename, encoding='latin-1', index_col=0)
-    for entry in data[column]:
-        corpus.append(entry)
-    # corpus = [entry for entry in data[column]]
 
-    return corpus
+    return data
 
 
 def tokenizer(tweet, stopset):
@@ -38,13 +34,8 @@ def tokenizer(tweet, stopset):
     return words
 
 
-def tokenize_corpus(corpus, stopset):
-    tokenized_corpus = []
-    for entry in corpus:
-        tokenized_corpus.append(tokenizer(entry, stopset))
-    # tokenized_corpus = [tokenizer(entry, stopset) for entry in corpus]
-
-    return tokenized_corpus
+def tokenize_corpus(texts, stopset):
+    return [tokenizer(text, stopset) for text in texts]
 
 
 def create_fitted_vectorizer(corpus):
@@ -101,10 +92,6 @@ def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
 def main():
 
     tweets = build_corpus_from_csv(dataFile, 'Tweet')
-
-    tokenized_tweets = tokenize_corpus(tweets, stopset)
-
-    print(tokenized_tweets)
 
     fitted_vectorizer = create_fitted_vectorizer(tweets)
     tweet_feats = get_features(tweets)
