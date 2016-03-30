@@ -18,6 +18,7 @@ def build_corpus_from_csv(filename, column):
     data = pd.read_csv(filename, encoding='latin-1', index_col=0)
     for entry in data[column]:
         corpus.append(entry)
+    # corpus = [entry for entry in data[column]]
 
     return corpus
 
@@ -41,6 +42,7 @@ def tokenize_corpus(corpus, stopset):
     tokenized_corpus = []
     for entry in corpus:
         tokenized_corpus.append(tokenizer(entry, stopset))
+    # tokenized_corpus = [tokenizer(entry, stopset) for entry in corpus]
 
     return tokenized_corpus
 
