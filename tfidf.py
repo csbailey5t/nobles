@@ -19,9 +19,9 @@ def build_corpus_from_csv(filename):
     return data
 
 
-def tokenizer(tweet, stopset):
+def tokenizer(text, stopset):
     # tokenize
-    tokens = word_tokenize(tweet.lower())
+    tokens = word_tokenize(text.lower())
 
     # remove stopwords
     tokens = [token for token in tokens if token not in stopset]
@@ -91,7 +91,8 @@ def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
 
 def main():
 
-    tweets = build_corpus_from_csv(dataFile, 'Tweet')
+    data = build_corpus_from_csv(dataFile)
+    tweets = [tweet for tweet in data['Tweet']]
 
     fitted_vectorizer = create_fitted_vectorizer(tweets)
     tweet_feats = get_features(tweets)
