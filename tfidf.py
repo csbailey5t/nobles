@@ -69,12 +69,6 @@ def top_tfidf_feats(row, features, top_n=25):
     return df
 
 
-def top_feats_in_doc(X, features, row_id, top_n=25):
-    row = np.squeeze(X[40].toarray())
-
-    return top_tfidf_feats(row, features, top_n)
-
-
 def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
     if grp_ids:
         D = X[grp_ids].toarray()
@@ -96,9 +90,8 @@ def main():
 
     fitted_vectorizer = create_fitted_vectorizer(tweets)
     tweet_feats = get_features(tweets)
-
+    # print(tweet_feats)
     mean_feats = top_mean_feats(fitted_vectorizer, tweet_feats)
-
     print(mean_feats)
 
 if __name__ == '__main__':

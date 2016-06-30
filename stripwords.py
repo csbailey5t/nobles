@@ -4,7 +4,7 @@ from nltk import word_tokenize
 import pandas as pd
 
 dataFile = 'AshleyBillasanoTweets.csv'
-# stopset = set(stopwords.words('english
+# stopset = set(stopwords.words('english'))
 stopset = {'this', 'fuckked'}
 
 
