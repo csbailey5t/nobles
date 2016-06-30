@@ -3,5 +3,11 @@ include/
 lib/
 share/
 
+
 pip-selfcheck.json
 .Python
+__pycache__/
+CaseStudyAnalysis-(1).py
+
+example_data/
+frequencies.csv
