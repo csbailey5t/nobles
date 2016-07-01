@@ -27,23 +27,35 @@ def fill_in_SMS_data(df):
     # or received it?
     # If so, if each participant has their own csv file, it would always be out
     # If not, if data of all participants in one file, will need to determine
+    in_out = "out"
     # this.
     # How much do they care about messages received by the individual?
-    in_out = []
     contact_name = []
-    contact_id = []
-    ind_grp = []
+    # for the moment, let's set contact id to "none"
+    # we'll have to grab this from some master reference?
+    contact_id = 'none'
+
+    users = df['user']
+    users = users.tolist()
+    users = set(users)
+    num_users = len(users)
+    if num_users > 2:
+        ind_grp = "grp"
+    else:
+        ind_grp = "ind"
 
     for index, row in df.iterrows():
-        df.loc[index, 'data type'] = data_type
-        # print(row['data type'])
-        # for contact name, if only two particpats in convo, can just get
-        # other key
-        # if using pandas groupby
-        # for contact id, will need to get from reference sheet at some pt
-        # for ind_group, if only two, indv? if more than two keys, grp?
+        user_list = list(users)
+        user_name = row['user']
+        contact_name = user_list[1] if user_name == user_list[0] \
+            else user_list[0]
 
-        # if do groupby, count keys to see if grp or ind
+        df.loc[index, 'data type'] = data_type
+        df.loc[index, 'in_out'] = in_out
+        df.loc[index, 'contact name'] = contact_name
+        df.loc[index, 'contact id'] = 'none'
+        df.loc[index, 'ind_grp'] = ind_grp
+
     return df
 
 
