@@ -56,15 +56,12 @@ class SMSTransformer:
         # If not, if data of all participants in one file,
         # will need to determine this.
         in_out = "out"
-        # Could abstract this bit into a function
+
         users = df['user']
         users = users.tolist()
         users = set(users)
-        num_users = len(users)
-        if num_users > 2:
-            ind_grp = "grp"
-        else:
-            ind_grp = "ind"
+
+        ind_grp = get_ind_grp(users)
 
         for index, row in df.iterrows():
             user_list = list(users)
@@ -81,6 +78,15 @@ class SMSTransformer:
             df.loc[index, 'ind_grp'] = ind_grp
 
         self.full_data = df
+
+
+def get_ind_grp(user_set):
+    num_users = len(user_set)
+    if num_users > 2:
+        ind_grp = "grp"
+    else:
+        ind_grp = "ind"
+    return ind_grp
 
 
 def get_contact_id(id_file, contact_name):
