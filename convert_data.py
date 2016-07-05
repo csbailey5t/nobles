@@ -50,9 +50,8 @@ class SMSTransformer:
         # or received it?
         # If each participant has their own csv file, it would always be out
         # If not, if data of all participants in one file,
-        # will need to determine
+        # will need to determine this.
         in_out = "out"
-        # this.
         # How much do they care about messages received by the individual?
         contact_name = []
         # for the moment, let's set contact id to "none"
