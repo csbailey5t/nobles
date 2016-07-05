@@ -5,14 +5,16 @@
 import pandas as pd
 
 CONVO = 'sample_text_convo.csv'
+CONTACT_LIST = 'user_index.csv'
 
 
 class SMSTransformer:
     """Takes a tsv file of SMS messages, manipulates them,
      and reformates them."""
 
-    def __init__(self, data):
+    def __init__(self, data, contact_list):
         self.data = data
+        self.contact_list = contact_list
         self.df = None
         self.texts = None
         self.full_data = None
@@ -45,6 +47,8 @@ class SMSTransformer:
         self.texts = texts
 
     def fill_in_SMS_data(self):
+        df = self.texts
+
         data_type = 'SMS'
         # I assume that in_out is whether the participant wrote the message
         # or received it?
@@ -52,13 +56,7 @@ class SMSTransformer:
         # If not, if data of all participants in one file,
         # will need to determine this.
         in_out = "out"
-        # How much do they care about messages received by the individual?
-        contact_name = []
-        # for the moment, let's set contact id to "none"
-        # we'll have to grab this from some master reference?
-        contact_id = 'none'
-        df = self.texts
-
+        # Could abstract this bit into a function
         users = df['user']
         users = users.tolist()
         users = set(users)
@@ -74,6 +72,8 @@ class SMSTransformer:
             contact_name = user_list[1] if user_name == user_list[0] \
                 else user_list[0]
 
+            contact_id = get_contact_id(self.contact_list, contact_name)
+
             df.loc[index, 'data type'] = data_type
             df.loc[index, 'in_out'] = in_out
             df.loc[index, 'contact name'] = contact_name
@@ -83,12 +83,18 @@ class SMSTransformer:
         self.full_data = df
 
 
+def get_contact_id(id_file, contact_name):
+    contact_index = pd.read_table(id_file)
+    contact_row = contact_index[contact_index['name'] == contact_name]
+    contact_id = contact_row['id'].iloc[0]
+    return contact_id
+
+
 def main():
     # while the file format for the iphone SMS data is csv,
     # it's actually a tsv file
-    texts = SMSTransformer(CONVO)
+    texts = SMSTransformer(CONVO, CONTACT_LIST)
     print(texts)
-
 
 if __name__ == '__main__':
     main()
