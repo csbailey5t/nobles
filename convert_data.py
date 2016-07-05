@@ -4,11 +4,11 @@
 
 import pandas as pd
 
-CONVO = 'sample_text_convo.csv'
+IPHONE_CONVO = 'sample_iphone_text_convo.csv'
 CONTACT_LIST = 'user_index.csv'
 
 
-class SMSTransformer:
+class IphoneSMSTransformer:
     """Takes a tsv file of SMS messages, manipulates them,
      and reformates them."""
 
@@ -99,7 +99,7 @@ def get_contact_id(id_file, contact_name):
 def main():
     # while the file format for the iphone SMS data is csv,
     # it's actually a tsv file
-    texts = SMSTransformer(CONVO, CONTACT_LIST)
+    texts = IphoneSMSTransformer(IPHONE_CONVO, CONTACT_LIST)
     print(texts)
 
 if __name__ == '__main__':
