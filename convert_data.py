@@ -5,12 +5,12 @@
 import pandas as pd
 
 IPHONE_CONVO = 'sample_iphone_text_convo.csv'
+ANDROID_CONVO = 'example_data/android_sms_to_text/SMSToTextExample.xslx'
 CONTACT_LIST = 'user_index.csv'
 
 
 class IphoneSMSTransformer:
-    """Takes a tsv file of SMS messages, manipulates them,
-     and reformates them."""
+    """Takes a tsv file of SMS messages, manipulates, and reformats."""
 
     def __init__(self, data, contact_list):
         self.data = data
@@ -22,6 +22,7 @@ class IphoneSMSTransformer:
         self.read_data()
         self.split_datetime()
         self.fill_in_SMS_data()
+        self.print_to_csv()
 
     def __repr__(self):
         return "{}".format(self.full_data)
@@ -78,6 +79,26 @@ class IphoneSMSTransformer:
             df.loc[index, 'ind_grp'] = ind_grp
 
         self.full_data = df
+
+    def print_to_csv(self):
+            df = self.full_data
+            df.to_csv('iphone.csv')
+
+
+class AndroidSMSTransformer:
+    """ Takes a data file of SMS messages, manipulates, and reformats. """
+
+    def __init__(self, data, contact_list):
+        self.data = data
+        self.contact_list = contact_list
+
+        self.read_data()
+
+    def read_data(self):
+        pass
+
+    def fill_in_SMS_data(self):
+        pass
 
 
 def get_ind_grp(user_set):
