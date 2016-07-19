@@ -26,9 +26,10 @@ class AndroidSMSTransformer:
 class IphoneSMSTransformer:
     """Takes a tsv file of SMS messages, manipulates, and reformats."""
 
-    def __init__(self, data, contact_list):
+    def __init__(self, data, contact_list, output):
         self.data = data
         self.contact_list = contact_list
+        self.output_file = output
         self.df = None
         self.cleaned_data = None
         self.full_data = None
@@ -102,7 +103,7 @@ class IphoneSMSTransformer:
 
     def print_to_csv(self):
             df = self.full_data
-            df.to_csv('iphone.csv')
+            df.to_csv(self.output_file)
 
 
 def get_ind_grp(user_set):
@@ -122,14 +123,17 @@ def get_recipient_relationship(id_file, recipient_name):
 
 
 @click.command()
-@click.option('--input', default='iphone_multi.csv',
+@click.option('--input', '-i', default='iphone_multi.csv',
               help='Provide an input file in csv format'
               )
-@click.option('--contact_list', default='user_index.csv',
+@click.option('--contact_list', '-cl', default='user_index.csv',
               help='Provide a reference file for recipient relationships'
               )
-def main(input, contact_list):
-    texts = IphoneSMSTransformer(input, contact_list)
+@click.option('--output', '-o', default='iphone.csv',
+              help='Provide a filename for the csv output'
+              )
+def main(input, contact_list, output):
+    texts = IphoneSMSTransformer(input, contact_list, output)
     print(texts)
 
 if __name__ == '__main__':
