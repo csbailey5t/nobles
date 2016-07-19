@@ -39,11 +39,11 @@ class IphoneSMSTransformer:
         self.subject = None
 
         self.read_data()
-        self.get_user_name()
-        self.get_text_data()
+        # self.get_user_name()
+        # self.get_text_data()
         self.split_datetime()
         self.fill_in_SMS_data()
-        # self.print_to_csv()
+        self.print_to_csv()
 
     def __repr__(self):
         return "{}".format(self.full_data)
@@ -81,14 +81,16 @@ class IphoneSMSTransformer:
         self.texts = content
 
     def split_datetime(self):
-        date_time = self.texts['datetime']
+        # data = self.texts
+        data = self.df
+        date_time = data['datetime']
         date = []
         time = []
         for timestamp in date_time:
             pieces = timestamp.split(' ')
             date.append(pieces[0])
             time.append(pieces[1])
-        texts = self.df.drop('datetime', 1)
+        texts = data.drop('datetime', 1)
         texts['date'] = pd.Series(date)
         texts['time'] = pd.Series(time)
         self.cleaned_data = texts
@@ -117,7 +119,6 @@ class IphoneSMSTransformer:
                 else user_list[0]
 
             contact_id = get_contact_id(self.contact_list, contact_name)
-            print('contact name is ', contact_id)
             df.loc[index, 'data type'] = data_type
             df.loc[index, 'in_out'] = in_out
             df.loc[index, 'contact name'] = contact_name
@@ -143,9 +144,8 @@ def get_ind_grp(user_set):
 def get_contact_id(id_file, contact_name):
     contact_index = pd.read_csv(id_file)
     contact_row = contact_index[contact_index['name'] == contact_name]
-    print('contact row is: ', contact_row)
-    # contact_id = contact_row['relation'].iloc[0]
-    contact_id = contact_row['relation']
+    contact_id = contact_row['relation'].iloc[0]
+    # contact_id = contact_row['relation']
     return contact_id
 
 
