@@ -33,14 +33,11 @@ class IphoneSMSTransformer:
         self.data = data
         self.contact_list = contact_list
         self.df = None
-        self.texts = None
         self.cleaned_data = None
         self.full_data = None
         self.subject = None
 
         self.read_data()
-        # self.get_user_name()
-        # self.get_text_data()
         self.split_datetime()
         self.fill_in_SMS_data()
         self.print_to_csv()
@@ -51,37 +48,11 @@ class IphoneSMSTransformer:
     def read_data(self):
         df = pd.read_csv(
             self.data, encoding='latin-1',
-            names=['user', 'phone number', 'datetime', 'message']
+            names=['sender', 'phone number', 'datetime', 'message']
         )
         self.df = df
 
-    def get_user_name(self):
-        """
-        Gets the primary user from the first line of the csv file.
-        This is the user whose texts we are concerned about
-        """
-        df = self.df
-        # get first line
-        first_row = df.iloc[0]
-        chunks = first_row[0].split(' ')
-        names = chunks[-2:]
-        name = ' '.join(names)
-        self.subject = name
-        # Use named entity extraction? Will the name always be two words?
-
-    def get_text_data(self):
-        """
-        Splits the intro data listing the names in the convo from the texts
-        themselves.
-        """
-        df = self.df
-        # since the phone number is a number, we can just check for anything
-        # greater than 0. This rules out empty cells.
-        content = df[df['phone number'] > 0]
-        self.texts = content
-
     def split_datetime(self):
-        # data = self.texts
         data = self.df
         date_time = data['datetime']
         date = []
@@ -97,16 +68,11 @@ class IphoneSMSTransformer:
 
     def fill_in_SMS_data(self):
         df = self.cleaned_data
-
+        # set this manually while developing, but eventually with command line
+        participant = 'Jeff Glenn'
         data_type = 'SMS'
-        # I assume that in_out is whether the participant wrote the message
-        # or received it?
-        # If each participant has their own csv file, it would always be out
-        # If not, if data of all participants in one file,
-        # will need to determine this.
-        in_out = "out"
 
-        users = df['user']
+        users = df['sender']
         users = users.tolist()
         users = set(users)
 
@@ -114,15 +80,29 @@ class IphoneSMSTransformer:
 
         for index, row in df.iterrows():
             user_list = list(users)
-            user_name = row['user']
-            contact_name = user_list[1] if user_name == user_list[0] \
-                else user_list[0]
+            sender = row['sender']
 
-            contact_id = get_contact_id(self.contact_list, contact_name)
+            # Since each file should have a single user as its main person,
+            # in and out will be determined by relation to that person.
+            # let's make this a command line option
+            in_out = 'out' if sender == participant else 'in'
+
+            # contact name will need to be fixed to handle multigroup
+            # can replace this with the user name from the first column
+            # since the user in each case will actually be the
+            # study participant
+            # Problem: in multi convo, more than one recipient. put in all as
+            # list? or create multiple fields? would then need mulitple fields
+            # for relationship
+            contact_name = 'Finley'
+
+            contact_relationship = get_contact_relationship(
+                self.contact_list, contact_name
+                )
             df.loc[index, 'data type'] = data_type
             df.loc[index, 'in_out'] = in_out
             df.loc[index, 'contact name'] = contact_name
-            df.loc[index, 'contact id'] = contact_id
+            df.loc[index, 'contact relationship'] = contact_relationship
             df.loc[index, 'ind_grp'] = ind_grp
 
         self.full_data = df
@@ -141,12 +121,11 @@ def get_ind_grp(user_set):
     return ind_grp
 
 
-def get_contact_id(id_file, contact_name):
+def get_contact_relationship(id_file, contact_name):
     contact_index = pd.read_csv(id_file)
     contact_row = contact_index[contact_index['name'] == contact_name]
-    contact_id = contact_row['relation'].iloc[0]
-    # contact_id = contact_row['relation']
-    return contact_id
+    contact_relationship = contact_row['relation'].iloc[0]
+    return contact_relationship
 
 
 def main():
