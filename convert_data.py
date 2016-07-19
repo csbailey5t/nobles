@@ -1,7 +1,3 @@
-# Read in text csv
-# separate into two dataframes, one for each participant
-# break into fields that match the example data format
-
 import pandas as pd
 
 IPHONE_CONVO = 'sample_iphone_text_convo.csv'
@@ -88,7 +84,6 @@ class IphoneSMSTransformer:
             user_list = list(local_users)
             recipients = [recipient for recipient in user_list
                           if recipient is not sender]
-            # rewrite for groups
             recipient_relationships = [
                 get_recipient_relationship(self.contact_list, recipient)
                 for recipient in recipients
@@ -126,8 +121,6 @@ def get_recipient_relationship(id_file, recipient_name):
 
 
 def main():
-    # while the file format for the iphone SMS data is csv,
-    # it's actually a tsv file
     texts = IphoneSMSTransformer(IPHONE_MULTI, CONTACT_LIST)
     print(texts)
 
