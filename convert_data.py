@@ -79,30 +79,26 @@ class IphoneSMSTransformer:
         ind_grp = get_ind_grp(users)
 
         for index, row in df.iterrows():
-            user_list = list(users)
             sender = row['sender']
 
-            # Since each file should have a single user as its main person,
-            # in and out will be determined by relation to that person.
-            # let's make this a command line option
             in_out = 'out' if sender == participant else 'in'
 
-            # contact name will need to be fixed to handle multigroup
-            # can replace this with the user name from the first column
-            # since the user in each case will actually be the
-            # study participant
-            # Problem: in multi convo, more than one recipient. put in all as
-            # list? or create multiple fields? would then need mulitple fields
-            # for relationship
-            contact_name = 'Finley'
+            local_users = users
+            user_list = list(local_users)
+            recipients = [recipient for recipient in user_list
+                          if recipient is not sender]
+            # rewrite for groups
+            recipient_relationships = [
+                get_recipient_relationship(self.contact_list, recipient)
+                for recipient in recipients
+            ]
 
-            contact_relationship = get_contact_relationship(
-                self.contact_list, contact_name
-                )
             df.loc[index, 'data type'] = data_type
             df.loc[index, 'in_out'] = in_out
-            df.loc[index, 'contact name'] = contact_name
-            df.loc[index, 'contact relationship'] = contact_relationship
+            df.loc[index, 'recipients'] = str(recipients)
+            df.loc[index, 'recipient relationship'] = str(
+                recipient_relationships
+                )
             df.loc[index, 'ind_grp'] = ind_grp
 
         self.full_data = df
@@ -121,11 +117,11 @@ def get_ind_grp(user_set):
     return ind_grp
 
 
-def get_contact_relationship(id_file, contact_name):
-    contact_index = pd.read_csv(id_file)
-    contact_row = contact_index[contact_index['name'] == contact_name]
-    contact_relationship = contact_row['relation'].iloc[0]
-    return contact_relationship
+def get_recipient_relationship(id_file, recipient_name):
+    recipient_index = pd.read_csv(id_file)
+    recipient_row = recipient_index[recipient_index['name'] == recipient_name]
+    recipient_relationship = recipient_row['relation'].iloc[0]
+    return recipient_relationship
 
 
 def main():
