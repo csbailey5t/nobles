@@ -50,6 +50,7 @@ class IphoneSMSTransformer:
             self.data, encoding='latin-1',
             names=['sender', 'phone number', 'datetime', 'message']
         )
+        df["message"] = df["message"].str.replace('\r', '')
         self.df = df
 
     def split_datetime(self):
