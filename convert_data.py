@@ -1,4 +1,5 @@
 import pandas as pd
+import click
 
 IPHONE_CONVO = 'sample_iphone_text_convo.csv'
 IPHONE_MULTI = 'iphone_multi.csv'
@@ -120,8 +121,15 @@ def get_recipient_relationship(id_file, recipient_name):
     return recipient_relationship
 
 
-def main():
-    texts = IphoneSMSTransformer(IPHONE_MULTI, CONTACT_LIST)
+@click.command()
+@click.option('--input', default='iphone_multi.csv',
+              help='Provide an input file in csv format'
+              )
+@click.option('--contact_list', default='user_index.csv',
+              help='Provide a reference file for recipient relationships'
+              )
+def main(input, contact_list):
+    texts = IphoneSMSTransformer(input, contact_list)
     print(texts)
 
 if __name__ == '__main__':
