@@ -26,10 +26,11 @@ class AndroidSMSTransformer:
 class IphoneSMSTransformer:
     """Takes a tsv file of SMS messages, manipulates, and reformats."""
 
-    def __init__(self, data, contact_list, output):
+    def __init__(self, data, contact_list, output, participant):
         self.data = data
         self.contact_list = contact_list
         self.output_file = output
+        self.particpant = participant
         self.df = None
         self.cleaned_data = None
         self.full_data = None
@@ -67,8 +68,8 @@ class IphoneSMSTransformer:
 
     def fill_in_SMS_data(self):
         df = self.cleaned_data
-        # set this manually while developing, but eventually with command line
-        participant = 'Jeff Glenn'
+
+        participant = self.particpant
         data_type = 'SMS'
 
         users = df['sender']
@@ -132,8 +133,11 @@ def get_recipient_relationship(id_file, recipient_name):
 @click.option('--output', '-o', default='iphone.csv',
               help='Provide a filename for the csv output'
               )
-def main(input, contact_list, output):
-    texts = IphoneSMSTransformer(input, contact_list, output)
+@click.option('--participant', '-p', default='Jeff Glenn',
+              help='Provide the name of the participant'
+              )
+def main(input, contact_list, output, participant):
+    texts = IphoneSMSTransformer(input, contact_list, output, participant)
     print(texts)
 
 if __name__ == '__main__':
