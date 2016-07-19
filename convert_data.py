@@ -111,9 +111,9 @@ def get_ind_grp(user_set):
 
 
 def get_contact_id(id_file, contact_name):
-    contact_index = pd.read_table(id_file)
+    contact_index = pd.read_csv(id_file)
     contact_row = contact_index[contact_index['name'] == contact_name]
-    contact_id = contact_row['id'].iloc[0]
+    contact_id = contact_row['relation'].iloc[0]
     return contact_id
 
 
