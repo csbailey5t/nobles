@@ -24,13 +24,13 @@ class AndroidSMSTransformer:
 
 
 class IphoneSMSTransformer:
-    """Takes a tsv file of SMS messages, manipulates, and reformats."""
+    """Takes a csv file of SMS messages, manipulates, and reformats."""
 
     def __init__(self, data, contact_list, output, participant):
         self.data = data
         self.contact_list = contact_list
         self.output_file = output
-        self.particpant = participant
+        self.participant = participant
         self.df = None
         self.cleaned_data = None
         self.full_data = None
@@ -46,13 +46,15 @@ class IphoneSMSTransformer:
 
     def read_data(self):
         df = pd.read_csv(
-            self.data, encoding='latin-1',
+            self.data, encoding='utf-8',
             names=['sender', 'phone number', 'datetime', 'message']
         )
+        df.dropna(subset=['message'], inplace=True)
         df["message"] = df["message"].str.replace('\r', '')
         self.df = df
 
     def split_datetime(self):
+        # use pandas to_datetime to handle this Series
         data = self.df
         date_time = data['datetime']
         date = []
@@ -69,9 +71,9 @@ class IphoneSMSTransformer:
     def fill_in_SMS_data(self):
         df = self.cleaned_data
 
-        participant = self.particpant
+        participant = self.participant
         data_type = 'SMS'
-
+        # can you go straight from Series to set?
         users = df['sender']
         users = users.tolist()
         users = set(users)
@@ -84,9 +86,11 @@ class IphoneSMSTransformer:
             in_out = 'out' if sender == participant else 'in'
 
             local_users = users
+            # can look at whether to set.remove(sender)
             user_list = list(local_users)
             recipients = [recipient for recipient in user_list
                           if recipient is not sender]
+
             recipient_relationships = [
                 get_recipient_relationship(self.contact_list, recipient)
                 for recipient in recipients
@@ -119,6 +123,7 @@ def get_ind_grp(user_set):
 def get_recipient_relationship(id_file, recipient_name):
     recipient_index = pd.read_csv(id_file)
     recipient_row = recipient_index[recipient_index['name'] == recipient_name]
+    # Add some check to handle when name isn't in the file
     recipient_relationship = recipient_row['relation'].iloc[0]
     return recipient_relationship
 
